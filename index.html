@@ -1,382 +1,111 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>番茄鐘計時器</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    <style>
-        .dark {
-            background-color: #1a1a1a;
-            color: #ffffff;
-        }
-        .dark .card {
-            background-color: #2d2d2d;
-        }
-        .dark input {
-            background-color: #3d3d3d;
-            color: #ffffff;
-        }
-        .dark .outline-btn {
-            border-color: #666;
-            color: #fff;
-        }
-        .timer-display {
-            font-family: monospace;
-            font-size: 3.5rem;
-            font-weight: bold;
-            letter-spacing: 2px;
-        }
-        .card {
-            background: white;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 1.5rem;
-            max-width: 32rem;
-            margin: 2rem auto;
-        }
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        .progress-container {
-            width: 100%;
-            height: 4px;
-            background-color: #e5e7eb;
-            border-radius: 2px;
-            margin: 1rem 0;
-        }
-        .progress-bar {
-            height: 100%;
-            background-color: #10b981;
-            border-radius: 2px;
-            transition: width 1s linear;
-        }
-        .dark .progress-container {
-            background-color: #4b5563;
-        }
-    </style>
-    <script>
-        // 建立 Web Worker 的程式碼
-        const workerCode = `
-            let timer;
-            let timeLeft = 0;
-            let milliseconds = 0;
-            let isRunning = false;
-            let startTime;
-            let totalDuration;
-
-            self.onmessage = function(e) {
-                if (e.data.command === 'start') {
-                    timeLeft = e.data.timeLeft;
-                    milliseconds = e.data.milliseconds;
-                    totalDuration = timeLeft * 1000 + milliseconds * 10;
-                    startTime = performance.now();
-                    isRunning = true;
-                    startTimer();
-                } else if (e.data.command === 'stop') {
-                    isRunning = false;
-                    cancelAnimationFrame(timer);
-                }
-            };
-
-            function startTimer() {
-                if (!isRunning) return;
-
-                const currentTime = performance.now();
-                const elapsedTime = currentTime - startTime;
-                const remainingTime = Math.max(0, totalDuration - elapsedTime);
-                
-                if (remainingTime <= 0) {
-                    self.postMessage({ type: 'timeout' });
-                    isRunning = false;
-                    return;
-                }
-
-                const remainingSeconds = Math.floor(remainingTime / 1000);
-                const remainingMilliseconds = Math.floor((remainingTime % 1000) / 10);
-
-                self.postMessage({ 
-                    type: 'tick', 
-                    timeLeft: remainingSeconds,
-                    milliseconds: remainingMilliseconds
-                });
-
-                timer = requestAnimationFrame(startTimer);
-            }
-        `;
-
-        // 創建 Blob URL
-        const blob = new Blob([workerCode], { type: 'application/javascript' });
-        const workerURL = URL.createObjectURL(blob);
-    </script>
+  <title>Cheng YuJiun</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --text: #1a1a1a;
+      --muted: #555;
+      --rule: #e5e7eb;
+      --accent: #0b5d8d;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans TC", "Helvetica Neue", Arial, sans-serif;
+      color: var(--text);
+      line-height: 1.55;
+      background: #fff;
+      text-align: center;
+    }
+    .container {
+      max-width: 860px;
+      margin: 40px auto;
+      padding: 0 24px;
+    }
+    header h1 {
+      font-size: 2rem;
+      margin: 0 0 6px;
+      letter-spacing: .2px;
+    }
+    header .gray {
+      color: var(--muted);
+      font-size: .98rem;
+      margin-bottom: 20px;
+    }
+    hr {
+      border: 0;
+      border-top: 1px solid var(--rule);
+      margin: 20px 0 28px;
+    }
+    .nav-buttons {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin: 40px 0;
+    }
+    .nav-buttons a {
+      display: inline-block;
+      padding: 12px 20px;
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s ease-in-out;
+    }
+    .nav-buttons a:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+    .chips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    justify-content:center;  /* ← 水平置中 */
+    align-items:center;
+    margin:8px 0 16px;
+    }
+    .chip{
+    border:1px solid var(--rule);
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:.9rem;
+    color:var(--muted);
+    }
+    footer {
+      margin-top: 60px;
+    }
+    @media print {
+      .nav-buttons { display: none; }
+    }
+  </style>
 </head>
-<body class="min-h-screen p-4">
-    <div class="card">
-        <div class="flex justify-between items-center mb-6">
-            <button id="themeToggle" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
-                🌙
-            </button>
-            <h1 class="text-xl font-bold">番茄鐘計時器</h1>
-            <button id="soundToggle" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
-                🔊
-            </button>
-        </div>
-
-        <div class="text-center mb-4">
-            <div id="timer" class="timer-display">00:00.00</div>
-            <div id="modeDisplay" class="text-lg font-semibold text-green-600 dark:text-green-400">準備開始</div>
-            <div id="cycleDisplay" class="text-sm text-gray-600 dark:text-gray-400 mt-1">循環: 0 / 0</div>
-        </div>
-
-        <div class="progress-container">
-            <div id="progressBar" class="progress-bar" style="width: 0%"></div>
-        </div>
-
-        <div class="mb-6">
-            <h2 class="font-semibold mb-2">⚙️ 設定</h2>
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm mb-1">專注時間 (分鐘)</label>
-                    <input type="number" id="focusMinutes" value="25" class="w-full p-2 border rounded">
-                </div>
-                <div>
-                    <label class="block text-sm mb-1">休息時間 (分鐘)</label>
-                    <input type="number" id="breakMinutes" value="5" class="w-full p-2 border rounded">
-                </div>
-                <div>
-                    <label class="block text-sm mb-1">循環次數</label>
-                    <input type="number" id="cycles" value="4" class="w-full p-2 border rounded">
-                </div>
-                <div>
-                    <label class="block text-sm mb-1">長休息時間 (分鐘)</label>
-                    <input type="number" id="longBreakMinutes" value="15" class="w-full p-2 border rounded">
-                </div>
-            </div>
-        </div>
-
-        <div class="flex justify-center gap-4">
-            <button id="startBtn" class="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600">開始</button>
-            <button id="stopBtn" class="hidden px-6 py-2 bg-red-500 text-white rounded hover:bg-red-600">停止</button>
-            <button id="skipBtn" class="hidden px-6 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600">跳過</button>
-            <button id="resetBtn" class="px-6 py-2 border rounded hover:bg-gray-100 dark:hover:bg-gray-700">重置</button>
-        </div>
+<body>
+  <main class="container">
+    <header>
+      <h1>Cheng YuJiun</h1>
+      <div class="gray">NTUST CCE Master's Student</div>
+    </header>
+    <div class="chips">
+        <span class="chip">BIM</span>
+        <span class="chip">Revit API / C#</span>
+        <span class="chip">Rhino.inside.Revit / Grasshopper</span>
+        <span class="chip">ASP.NET</span>
+        <span class="chip">WinForm</span>
+        <span class="chip">MSSQL</span>
+        <span class="chip">C++</span>
     </div>
-
-    <script>
-        const timerDisplay = document.getElementById('timer');
-        const modeDisplay = document.getElementById('modeDisplay');
-        const cycleDisplay = document.getElementById('cycleDisplay');
-        const progressBar = document.getElementById('progressBar');
-        const startBtn = document.getElementById('startBtn');
-        const stopBtn = document.getElementById('stopBtn');
-        const skipBtn = document.getElementById('skipBtn');
-        const resetBtn = document.getElementById('resetBtn');
-        const themeToggle = document.getElementById('themeToggle');
-        const soundToggle = document.getElementById('soundToggle');
-
-        let timeLeft = 0;
-        let milliseconds = 0;
-        let isRunning = false;
-        let isSoundEnabled = true;
-        let timer;
-        let worker = new Worker(workerURL);
-        
-        // 處理 Web Worker 的訊息
-        worker.onmessage = function(e) {
-            if (e.data.type === 'tick') {
-                timeLeft = e.data.timeLeft;
-                milliseconds = e.data.milliseconds;
-                updateDisplay();
-            } else if (e.data.type === 'timeout') {
-                playAlertSound();
-                moveToNextPhase();
-            }
-        };
-        
-        // 番茄鐘狀態
-        let currentMode = 'focus'; // 'focus' or 'break' or 'longBreak'
-        let currentCycle = 0;
-        let totalCycles = 4;
-        let originalTime = 0;
-
-        // 主題切換
-        themeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('dark');
-            themeToggle.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
-        });
-
-        // 音效切換
-        soundToggle.addEventListener('click', () => {
-            isSoundEnabled = !isSoundEnabled;
-            soundToggle.textContent = isSoundEnabled ? '🔊' : '🔈';
-        });
-
-        function playAlertSound() {
-            if (!isSoundEnabled) return;
-
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            
-            const playBeep = (time, frequency, duration) => {
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.type = 'sine';
-                oscillator.frequency.value = frequency;
-                
-                gainNode.gain.setValueAtTime(0.5, time);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, time + duration);
-                
-                oscillator.start(time);
-                oscillator.stop(time + duration);
-            };
-
-            const now = audioContext.currentTime;
-            playBeep(now, 880, 0.1);
-            playBeep(now + 0.15, 880, 0.1);
-            playBeep(now + 0.3, 1760, 0.2);
-        }
-
-        function formatTime(seconds, ms) {
-            const mins = Math.floor(seconds / 60);
-            const secs = seconds % 60;
-            return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}.${String(ms).padStart(2, '0')}`;
-        }
-
-        function updateDisplay() {
-            timerDisplay.textContent = formatTime(timeLeft, milliseconds);
-            cycleDisplay.textContent = `循環: ${currentCycle} / ${totalCycles}`;
-            
-            const progress = ((originalTime - timeLeft) / originalTime) * 100;
-            progressBar.style.width = `${progress}%`;
-
-            // 更新模式顯示
-            let modeText = '';
-            let modeColor = '';
-            switch(currentMode) {
-                case 'focus':
-                    modeText = '專注時間';
-                    modeColor = 'text-green-600 dark:text-green-400';
-                    progressBar.style.backgroundColor = '#10b981';
-                    break;
-                case 'break':
-                    modeText = '休息時間';
-                    modeColor = 'text-blue-600 dark:text-blue-400';
-                    progressBar.style.backgroundColor = '#3b82f6';
-                    break;
-                case 'longBreak':
-                    modeText = '長休息時間';
-                    modeColor = 'text-purple-600 dark:text-purple-400';
-                    progressBar.style.backgroundColor = '#8b5cf6';
-                    break;
-            }
-            modeDisplay.textContent = modeText;
-            modeDisplay.className = `text-lg font-semibold ${modeColor}`;
-        }
-
-        function startTimer() {
-            if (!isRunning) {
-                totalCycles = parseInt(document.getElementById('cycles').value) || 4;
-                const focusMinutes = parseInt(document.getElementById('focusMinutes').value) || 25;
-                const breakMinutes = parseInt(document.getElementById('breakMinutes').value) || 5;
-                const longBreakMinutes = parseInt(document.getElementById('longBreakMinutes').value) || 15;
-
-                timeLeft = focusMinutes * 60;
-                originalTime = timeLeft;
-                milliseconds = 0;
-                currentMode = 'focus';
-                currentCycle = 1;
-                
-                startTimerInterval();
-                
-                // 禁用設定輸入
-                document.querySelectorAll('input').forEach(input => input.disabled = true);
-            }
-        }
-
-        function startTimerInterval() {
-            isRunning = true;
-            startBtn.classList.add('hidden');
-            stopBtn.classList.remove('hidden');
-            skipBtn.classList.remove('hidden');
-            
-            worker.postMessage({
-                command: 'start',
-                timeLeft: timeLeft,
-                milliseconds: milliseconds
-            });
-        }
-
-        function moveToNextPhase() {
-            const focusMinutes = parseInt(document.getElementById('focusMinutes').value) || 25;
-            const breakMinutes = parseInt(document.getElementById('breakMinutes').value) || 5;
-            const longBreakMinutes = parseInt(document.getElementById('longBreakMinutes').value) || 15;
-
-            if (currentMode === 'focus') {
-                if (currentCycle === totalCycles) {
-                    currentMode = 'longBreak';
-                    timeLeft = longBreakMinutes * 60;
-                } else {
-                    currentMode = 'break';
-                    timeLeft = breakMinutes * 60;
-                }
-            } else {
-                if (currentMode === 'longBreak') {
-                    stopTimer();
-                    resetTimer();
-                    return;
-                }
-                currentMode = 'focus';
-                timeLeft = focusMinutes * 60;
-                currentCycle++;
-            }
-            originalTime = timeLeft;
-            milliseconds = 0;
-            updateDisplay();
-        }
-
-        function skipPhase() {
-            clearInterval(timer);
-            moveToNextPhase();
-            if (isRunning) {
-                startTimerInterval();
-            }
-        }
-
-        function stopTimer() {
-            isRunning = false;
-            worker.postMessage({ command: 'stop' });
-            startBtn.classList.remove('hidden');
-            stopBtn.classList.add('hidden');
-            skipBtn.classList.add('hidden');
-            document.querySelectorAll('input').forEach(input => input.disabled = false);
-        }
-
-        function resetTimer() {
-            stopTimer();
-            timeLeft = 0;
-            milliseconds = 0;
-            currentCycle = 0;
-            currentMode = 'focus';
-            originalTime = 0;
-            progressBar.style.width = '0%';
-            updateDisplay();
-            modeDisplay.textContent = '準備開始';
-            modeDisplay.className = 'text-lg font-semibold text-gray-600 dark:text-gray-400';
-        }
-
-        // 事件監聽器
-        startBtn.addEventListener('click', startTimer);
-        stopBtn.addEventListener('click', stopTimer);
-        skipBtn.addEventListener('click', skipPhase);
-        resetBtn.addEventListener('click', resetTimer);
-
-        // 初始化顯示
-        updateDisplay();
-    </script>
+    <div class="nav-buttons">
+      <a href="/resume/">Resume</a>
+    </div>
+    <hr>
+    <footer class="sub">
+      Last updated: 2025-08-24.
+    </footer>
+  </main>
 </body>
 </html>
