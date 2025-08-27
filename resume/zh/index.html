@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <title>Resume</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <style>
+    :root {
+      --text: #1a1a1a;
+      --muted: #555;
+      --rule: #e5e7eb;
+      --accent: #0b5d8d;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans TC", "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+      color: var(--text);
+      line-height: 1.55;
+      background: #fff;
+    }
+    .container {
+      max-width: 860px;
+      margin: 40px auto;
+      padding: 0 24px;
+    }
+    header h1 {
+      font-size: 2rem;
+      margin: 0 0 6px;
+      letter-spacing: .2px;
+    }
+    header .gray {
+      color: var(--muted);
+      font-size: .98rem;
+      margin-bottom: 8px;
+    }
+    hr {
+      border: 0;
+      border-top: 1px solid var(--rule);
+      margin: 20px 0 28px;
+    }
+    h2 {
+      font-size: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--accent);
+      margin: 26px 0 10px;
+    }
+    h3 {
+      font-size: 1.0rem;
+      margin: 0 0 2px;
+    }
+    .sub {
+      color: var(--muted);
+      font-size: .95rem;
+      margin-bottom: 8px;
+    }
+    ul { margin: 8px 0 14px 1.1rem; }
+    li { margin: 4px 0; }
+    .item { margin-bottom: 14px; }
+    .split {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    time { white-space: nowrap; color: var(--muted); font-variant-numeric: tabular-nums; }
+    @media print {
+      body { color: #000; }
+      a { color: #000; text-decoration: none; }
+      .container { margin: 0; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>程鈺鈞</h1>
+      <div class="gray">yujiuncheng94@gmail.com</div>
+    </header>
+
+    <hr />
+
+    <section id="education">
+      <h2>學歷</h2>
+
+      <div class="item">
+        <div class="split">
+          <h3>國立臺灣科技大學營建工程系資訊科技組-碩士</h3>
+          <time datetime="2023-09">Sep 2023 – Aug 2025</time>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="split">
+          <h3>銘傳大學建築學系-學士</h3>
+          <div>
+            <time datetime="2012-09">Sep 2012</time> – <time datetime="2017-06">Jun 2017</time>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="experience">
+      <h2>經歷</h2>
+
+      <div class="item">
+        <div class="split">
+          <h3>專案工程師</h3>
+          <div>
+            <time datetime="2018-08">Aug 2018</time> – <time datetime="2023-08">Aug 2023</time>
+          </div>
+        </div>
+        <div class="sub">建築師事務所，信義區，臺北市。</div>
+        <ul>
+          <li>建造執照圖繪製、執照書圖系統操作及執照文件整理與製作</li>
+          <li>H2集合住宅-非公共工程</li>
+          <li>經手過臺北市*2、新北市*2、水源局*2、臺中市*1，共7件執照案</li>
+        </ul>
+      </div>
+
+      <div class="item">
+        <div class="split">
+          <h3>約聘辦事員</h3>
+          <div>
+            <time datetime="2017-08">Aug 2017</time> – <time datetime="2018-07">Jul 2018</time>
+          </div>
+        </div>
+        <div class="sub">銘傳大學建築學系，龜山區，桃園市。</div>
+        <ul>
+          <li>教學單位庶務</li>
+          <li>環境維護</li>
+          <li>設備管理</li>
+          <li>公文收發</li>
+          <li>其他主管交辦事項</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="certifications">
+      <h2>測驗</h2>
+      <ul>
+        <li>多益聽力與閱讀 — 765分 <span class="sub">(Test Date: Aug 2024)</span></li>
+        <li>Autodesk Certified User: Revit Architecture <span class="sub">(Test Date: Dec 2023)</span></li>
+        <li>113年特種考試地方政府公務人員考試-四等考試 建築工程（臺北市）錄取 <span class="sub">(Test Date: Dec 2024)</span></li>
+      </ul>
+    </section>
+
+    <section id="skills">
+      <h2>專長</h2>
+        <div class="item">
+            <ul>
+                <li>建造執照圖繪製：Autodesk Revit、AutoCAD</li>
+                <li>BIM 自動化與參數化：Revit API（C#）、Dynamo、Grasshopper、Rhino.Inside.Revit</li>
+                <li>平面排版：Adobe InDesign、Illustrator、Photoshop</li>
+                <li>文書處理：Microsoft Word、PowerPoint、Excel</li>
+                <li>程式語言：C++</li>
+                <li>Web／後端開發：ASP.NET（C#）＋ SQL Server（MSSQL）</li>
+                <li>.NET 桌面開發／UI：Windows Forms（C#）— 用於 Revit 外掛介面</li>
+            </ul>
+        </div>
+    </section>
+    <hr>
+    <nav aria-label="Breadcrumb" class="sub">
+      <a href="/">首頁</a> / <span>履歷</span>
+    </nav>
+    <footer class="sub">
+        最後一次更新: 2025-08-27.
+    </footer>
+
+  </main>
+</body>
+</html>
